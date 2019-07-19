@@ -74,6 +74,5 @@ Distributed under the Apache 2.0 license. See ``LICENSE`` for more information.
 5. Create a new Pull Request
 
 <!-- Markdown link & img dfn's -->
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[wiki]: https://github.com/yourname/yourproject/wiki
+[travis-image]: https://img.shields.io/travis/fr3dch3n/jwt-auth/master.svg?style=flat-square
+[travis-url]: https://travis-ci.org/fr3dch3n/jwt-auth
