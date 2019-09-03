@@ -17,18 +17,27 @@ import (
 var jwksSet *jwk.Set = nil
 
 func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
-	go func() {
-		for {
-			newSet, err := jwksFetcher(path)
-			if err != nil {
-				log.Error(err)
-			} else {
-				log.Info("Reinitialized jwt-auth")
-				jwksSet = newSet
+	if jwksSet != nil {
+		go func() {
+			for {
+				loadConfiguration(jwksFetcher, path, sleepDuration)
+				time.Sleep(sleepDuration)
 			}
-			time.Sleep(sleepDuration)
-		}
-	}()
+		}()
+	} else {
+		loadConfiguration(jwksFetcher, path, sleepDuration)
+	}
+}
+
+func loadConfiguration(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
+	newSet, err := jwksFetcher(path)
+	if err != nil {
+		log.Error(err)
+	} else {
+		log.Info("Reinitialized jwt-auth")
+		jwksSet = newSet
+	}
+
 }
 
 func FetchJwksConfigurationFromSSM(ssmPath string) (*jwk.Set, error) {
