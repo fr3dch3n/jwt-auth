@@ -15,18 +15,28 @@ import (
 )
 
 var jwksSet *jwk.Set = nil
+var stop = false
 
 func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
 	if jwksSet != nil {
 		go func() {
 			for {
-				loadConfiguration(jwksFetcher, path, sleepDuration)
-				time.Sleep(sleepDuration)
+				if stop == false {
+					loadConfiguration(jwksFetcher, path, sleepDuration)
+					time.Sleep(sleepDuration)
+				} else {
+					break
+				}
 			}
 		}()
 	} else {
 		loadConfiguration(jwksFetcher, path, sleepDuration)
 	}
+}
+
+func StopReloadingJWKS() {
+	stop = true
+	jwksSet = nil
 }
 
 func loadConfiguration(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
