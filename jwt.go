@@ -19,18 +19,20 @@ var stop = false
 
 func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
 	if jwksSet != nil {
-		go func() {
-			for {
-				if stop == false {
-					loadConfiguration(jwksFetcher, path, sleepDuration)
-					time.Sleep(sleepDuration)
-				} else {
-					break
-				}
+		for {
+			if stop == false {
+				loadConfiguration(jwksFetcher, path, sleepDuration)
+				time.Sleep(sleepDuration)
+			} else {
+				break
 			}
-		}()
+		}
 	} else {
 		loadConfiguration(jwksFetcher, path, sleepDuration)
+		go func() {
+			time.Sleep(sleepDuration)
+			NewAuth(jwksFetcher, path, sleepDuration)
+		}()
 	}
 }
 
