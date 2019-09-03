@@ -16,7 +16,7 @@ import (
 
 var jwksSet *jwk.Set = nil
 
-func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepSeconds time.Duration) {
+func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepDuration time.Duration) {
 	go func() {
 		for {
 			newSet, err := jwksFetcher(path)
@@ -26,7 +26,7 @@ func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepSecon
 				log.Info("Reinitialized jwt-auth")
 				jwksSet = newSet
 			}
-			time.Sleep(sleepSeconds * time.Second)
+			time.Sleep(sleepDuration)
 		}
 	}()
 }
