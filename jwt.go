@@ -11,17 +11,24 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 )
 
 var jwksSet *jwk.Set = nil
 
-func NewAuth(ssmPath string, jwksFetcher func(string) (*jwk.Set, error)) {
-	log.Info("Initializing jwt-auth")
-	newSet, err := jwksFetcher(ssmPath)
-	if err != nil {
-		log.Error(err)
-	}
-	jwksSet = newSet
+func NewAuth(jwksFetcher func(string) (*jwk.Set, error), path string, sleepSeconds time.Duration) {
+	go func() {
+		for {
+			newSet, err := jwksFetcher(path)
+			if err != nil {
+				log.Error(err)
+			} else {
+				log.Info("Reinitialized jwt-auth")
+				jwksSet = newSet
+			}
+			time.Sleep(sleepSeconds * time.Second)
+		}
+	}()
 }
 
 func FetchJwksConfigurationFromSSM(ssmPath string) (*jwk.Set, error) {
