@@ -1,10 +1,9 @@
-all: dep test
+MAKEFLAGS += --silent
+
+all: test
 
 test:
 	go test -v ./...
-
-dep:
-	dep ensure
 
 fmt:
 	gofmt -s -w .
